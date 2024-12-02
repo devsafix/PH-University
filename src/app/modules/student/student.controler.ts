@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
+import {  RequestHandler} from 'express';
 import { serviceData } from './student.service';
 
 // import studentSchemaWIthZod from './student.zod';
 
 
-const getAllData = async (req: Request, res: Response,next:NextFunction) => {
+const getAllData:RequestHandler = async (req, res,next) => {
   try {
     const result = await serviceData.getAllData();
     res.status(200).json({
@@ -17,7 +17,7 @@ const getAllData = async (req: Request, res: Response,next:NextFunction) => {
   }
 };
 
-const getSingleData = async (req: Request, res: Response ,next:NextFunction) => {
+const getSingleData : RequestHandler = async (req, res ,next) => {
   try {
     const id = req.params.id;
     const result = await serviceData.singleData(id);
@@ -31,7 +31,7 @@ const getSingleData = async (req: Request, res: Response ,next:NextFunction) => 
   }
 };
 
-const deleteStudent=async(req :Request,res:Response , next:NextFunction)=>{
+const deleteStudent: RequestHandler =async(req ,res , next)=>{
   try {
     const value = req.params.id;
 
@@ -54,7 +54,7 @@ const deleteStudent=async(req :Request,res:Response , next:NextFunction)=>{
 }
 
 
-const updateStudent=async(req:Request,res:Response,next:NextFunction)=>{
+const updateStudent:RequestHandler =async(req,res,next)=>{
  try {
    const value = req.params.id;
 
