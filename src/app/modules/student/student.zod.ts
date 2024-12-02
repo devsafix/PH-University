@@ -35,24 +35,26 @@ const localSchema = z.object({
 
 // Student schema
 const studentSchemaWIthZod = z.object({
-  id: z.string().nonempty('ID is required'),
-  name: nameSchema,
-  email: z.string().email('Invalid email format').nonempty('Email is required'),
-  gender: z.enum(['female', 'male'], {
-    errorMap: () => ({ message: '{VALUE} is not valid' }),
-  }),
-  dateOfBirth: z.string(),
-  contactNumber: z.string(),
-  emergencyContactNO: z.string(),
-  bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
-    errorMap: () => ({ message: '{VALUE} is not valid' }),
-  }),
-  presentAdd: z.string(),
-  permanentAddress: z.string(),
-  guardian: guardianSchema,
-  localGuardian: localSchema,
-  image: z.string().optional(),
-  isActive: z.enum(['active', 'inActive']).default('active'),
+  body: z.object({
+    students: z.object({
+      name: nameSchema,
+      email: z.string().email('Invalid email format').nonempty('Email is required'),
+      gender: z.enum(['female', 'male'], {
+        errorMap: () => ({ message: '{VALUE} is not valid' }),
+      }),
+      dateOfBirth: z.string(),
+      contactNumber: z.string(),
+      bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
+        errorMap: () => ({ message: '{VALUE} is not valid' }),
+      }),
+      presentAdd: z.string(),
+      permanentAddress: z.string(),
+      guardian: guardianSchema,
+      localGuardian: localSchema,
+      image: z.string().optional(),
+    })
+  })
+
 });
 
 

@@ -1,17 +1,16 @@
 
-import {  NextFunction, Request, RequestHandler, Response } from "express";
+
 import { serviceData } from "./user.services";
+import catchAsync from "../../utils/catchAsync";
 
 // catch async
 
-const catchAsync = (fn: RequestHandler)=>{
-    return (req:Request,res:Response,next:NextFunction)=>{
-    Promise.resolve(fn(req,res,next)).catch((err)=>next(err))
+// const catchAsync = (fn: RequestHandler)=>{
+//     return (req:Request,res:Response,next:NextFunction)=>{
+//     Promise.resolve(fn(req,res,next)).catch((err)=>next(err))
 
-    }
-}
-
-
+//     }
+// }
 
 
 
@@ -22,9 +21,12 @@ const catchAsync = (fn: RequestHandler)=>{
 
 
 
-const createUser = catchAsync(async (req, res, next) => {
+
+
+const createUser = catchAsync(async (req, res) => {
   
         // validation with joy
+       
 
         const { password, students } = req.body;
         // data validation with zod
