@@ -36,6 +36,7 @@ const localSchema = z.object({
 // Student schema
 const studentSchemaWIthZod = z.object({
   body: z.object({
+    password: z.string().max(20).optional(),
     students: z.object({
       name: nameSchema,
       email: z.string().email('Invalid email format').nonempty('Email is required'),
@@ -48,6 +49,7 @@ const studentSchemaWIthZod = z.object({
         errorMap: () => ({ message: '{VALUE} is not valid' }),
       }),
       presentAdd: z.string(),
+      admissionSemester:z.string(),
       permanentAddress: z.string(),
       guardian: guardianSchema,
       localGuardian: localSchema,

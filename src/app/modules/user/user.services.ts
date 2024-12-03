@@ -1,8 +1,10 @@
 import config from "../../config";
+import { semesterModel } from "../academicSemister/semester.model";
 import { Student } from "../student/student.interface";
 import { StudentModel } from "../student/student.model";
 import {  TUser } from "./user.interface";
 import { userModel } from "./user.model";
+import { generateId } from "./user.utilis";
 
 const createUserInDB = async (password:string,data: Student) => {
 
@@ -20,8 +22,23 @@ const createUserInDB = async (password:string,data: Student) => {
 
 // default role
     user.role="student"
+
+
+    // find semester find by id
+    const admissionSemester= await semesterModel.findById(data.admissionSemester)
+
+
+
+
+
+
 // default id
-    user.id="2030100001"
+if(admissionSemester){
+    user.id= await generateId(admissionSemester)}
+    else{
+        throw new Error("bro semester no exits");
+        
+    }
 
 
 // create a user

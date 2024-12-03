@@ -24,6 +24,7 @@ const nameSchema = new Schema<Name>({
     //  }
   },
   middleName: { type: String },
+ 
   lastName: {
     type: String,
     required: [true, 'Last name us required,,,'],
@@ -58,6 +59,7 @@ const studentSchema = new Schema<Student, staticModel>({
     type: nameSchema,
     required: true,
   },
+  admissionSemester: { type: Schema.Types.ObjectId, ref:"semesterModel"},
   email: {
     type: String,
     required: true,

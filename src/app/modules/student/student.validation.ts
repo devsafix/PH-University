@@ -36,10 +36,7 @@ const studentValidationSchema = Joi.object({
   id: Joi.string().required().messages({
     'any.required': 'ID is required',
   }),
-  pass: Joi.string().required().max(20).messages({
-    'any.required': 'ID is required',
-    "string.max" :"pass maxi-mum 20 character"
-  }),
+
   name: nameSchema.required(),
   email: Joi.string().email().required().messages({
     'string.email': 'Invalid email format',

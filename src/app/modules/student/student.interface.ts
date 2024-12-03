@@ -37,6 +37,7 @@ export type Student = {
   guardian: Guardian;
   localGuardian: LocalGuardian;
   image?: string;
+  admissionSemester:Types.ObjectId,
   isDelete:boolean
 };
 
