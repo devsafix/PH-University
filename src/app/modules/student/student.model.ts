@@ -1,8 +1,10 @@
+
 import { Schema, model } from 'mongoose';
 import { Guardian, LocalGuardian, Name, staticModel, Student } from './student.interface';
 
 
 import validator from 'validator';
+
 
 
 
@@ -53,13 +55,13 @@ const localSchema = new Schema<LocalGuardian>({
 const studentSchema = new Schema<Student, staticModel>({
   id: { type: String, required: true, unique: true },
 
-  user: { type: Schema.Types.ObjectId, required: true, unique: true, ref:"userModel"},
+  user: { type: Schema.Types.ObjectId, required: true, unique: true, ref:"user"},
   
   name: {
     type: nameSchema,
     required: true,
   },
-  admissionSemester: { type: Schema.Types.ObjectId, ref:"semesterModel"},
+  admissionSemester: { type: Schema.Types.ObjectId, ref:"Semester"},
   email: {
     type: String,
     required: true,
@@ -99,6 +101,12 @@ const studentSchema = new Schema<Student, staticModel>({
     required: true,
   },
   image: String,
+  academicDepartment:{
+    type:Schema.Types.ObjectId,
+    ref: "academicDepartment"
+
+
+  },
   
   isDelete: { type: Boolean, default: false }
 },{

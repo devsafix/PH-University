@@ -54,6 +54,7 @@ const studentSchemaWIthZod = z.object({
       guardian: guardianSchema,
       localGuardian: localSchema,
       image: z.string().optional(),
+      academicDepartment:z.string()
     })
   })
 

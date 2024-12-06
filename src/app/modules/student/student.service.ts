@@ -1,24 +1,91 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
+
+import mongoose from 'mongoose';
 import { StudentModel } from './student.model';
+import AppError from '../../errors/AppError';
+import { userModel } from '../user/user.model';
+import { Student } from './student.interface';
 
 
 const getAllData = async () => {
-  const result = await StudentModel.find();
+  const result = await StudentModel.find().populate('admissionSemester').populate({
+    path: 'academicDepartment',
+    populate:{
+      path: "academicfaculty"
+    }
+  });
   return result;
 };
 
 const singleData = async (id: string) => {
-  const result = await StudentModel.findOne({ id: id });
+  const result = await StudentModel.findOne({ id: id }).populate({
+    path: 'academicDepartment',
+    populate: {
+      path: "academicfaculty"
+    }
+  });;
   return result;
 };
 
 const studentDelete=async(id:string)=>{
-  const result = await StudentModel.updateOne({id},{isDelete:true})
-  return result
+  const session = await mongoose.startSession()
+  
+  try {
+    session.startTransaction()
+    const deleteStudent = await StudentModel.findOneAndUpdate({ id }, { isDelete: true },{new:true,session})
+    if(!deleteStudent){
+      throw new AppError(404,"Failed to delete student");
+      
+    }
+    const deleteUser = await userModel.findOneAndUpdate({ id }, { isDelete: true }, { new: true, session })
+    if (!deleteUser) {
+      throw new AppError(404, "Failed to delete user");
+
+    }
+    await session.commitTransaction()
+    await session.endSession()
+    return deleteStudent
+  } catch (error:any) {
+    console.log(error)
+    await session.abortTransaction();
+    await session.endSession()
+    throw new Error("Fail to delete  student");
+    
+  }
+
+
+
+  
+  
 }
 
-const updateStudentbyId=async(id:string)=>{
-  const result = await StudentModel.updateOne({ id }, { contactNumber : "01633052196"})
+const updateStudentById=async(id:string,payload:Partial<Student>)=>{
+
+  const {name,guardian,localGuardian,...remainingStudentData}=payload
+
+  const modifiedData : Record<string,unknown> ={...remainingStudentData}
+
+  if(name&& Object.keys(name).length){
+    for(const [key,values] of Object.entries(name)){
+      modifiedData[`name.${key}`]=values
+    }
+  }
+  if (guardian && Object.keys(guardian).length){
+    for (const [key, values] of Object.entries(guardian)){
+      modifiedData[`guardian.${key}`]=values
+    }
+  }
+  if (localGuardian && Object.keys(localGuardian).length){
+    for (const [key, values] of Object.entries(localGuardian)){
+      modifiedData[`localGuardian.${key}`]=values
+    }
+  }
+
+
+
+
+  const result = await StudentModel.findOneAndUpdate({ id },modifiedData,{new:true,runValidators:true})
   return result
 }
 
@@ -27,5 +94,5 @@ export const serviceData = {
   getAllData,
   singleData,
   studentDelete,
-  updateStudentbyId
+  updateStudentById
 };

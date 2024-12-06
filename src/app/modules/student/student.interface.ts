@@ -26,6 +26,7 @@ export type Student = {
   user:Types.ObjectId,
   pass?:string;
   name: Name;
+  academicDepartment:Types.ObjectId,
   email: string;
   gender: 'male' | 'female';
   dateOfBirth: string;

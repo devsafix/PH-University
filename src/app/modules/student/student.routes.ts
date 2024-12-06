@@ -10,6 +10,6 @@ router.get('/:id', studentController.getSingleData);
 
 router.delete("/:id",studentController.deleteStudent)
 
-router.put("/:id",studentController.updateStudent)
+router.patch("/:id",studentController.updateStudent)
 
 export const studentRoutes = router;

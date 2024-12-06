@@ -58,7 +58,7 @@ const updateStudent:RequestHandler =async(req,res,next)=>{
  try {
    const value = req.params.id;
 
-   const result= await serviceData.updateStudentbyId(value)
+   const result= await serviceData.updateStudentById(value,req.body?.students)
    res.status(200).json({
      success: true,
      message: "updated",
