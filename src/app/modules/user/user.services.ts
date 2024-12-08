@@ -66,11 +66,12 @@ const createUserInDB = async (password: string, data: Student) => {
         return newStudent;
 
 
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error:any) {
         console.log(error)
         await session.abortTransaction()
         await session.endSession()
-        throw new Error("failed to create user");
+        throw new Error(error);
         
     }
 

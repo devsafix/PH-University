@@ -8,6 +8,7 @@ import handleZodError from '../errors/zodEror';
 import mongooseValidationError from '../errors/mongooseErorr';
 import handleCastError from '../errors/castError';
 import handleDuplicateError from '../errors/duplicateError';
+import AppError from '../errors/AppError';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -20,35 +21,48 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
         }
     ];
 
-  
+
 
     if (err instanceof ZodError) {
         const simplifiedError = handleZodError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSource;
-    }else if(err?.name==="ValidationError"){
+    } else if (err?.name === "ValidationError") {
         const simplifiedError = mongooseValidationError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSource;
-    }else if(err?.name==="CastError"){
+    } else if (err?.name === "CastError") {
         const simplifiedError = handleCastError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSource;
-    }else if (err?.code === 11000){
+    } else if (err?.code === 11000) {
         const simplifiedError = handleDuplicateError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSource;
+    }else if (err instanceof AppError) {
+        statusCode = err.statusCode
+        message = err.message;
+        errorSources = [{
+            path: '',
+            message: err?.message
+        }]
+    }else if (err instanceof Error) {
+        message = err.message;
+        errorSources = [{
+            path: '',
+            message: err?.message
+        }]
     }
 
     res.status(statusCode).json({
         success: false,
         message,
         errorSources,
-        stack:config.node_env==="development"? err?.stack : null
+        stack: config.node_env === "development" ? err?.stack : null
     });
 };
 

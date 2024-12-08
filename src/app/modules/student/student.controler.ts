@@ -6,10 +6,10 @@ import { serviceData } from './student.service';
 
 const getAllData:RequestHandler = async (req, res,next) => {
   try {
-    const result = await serviceData.getAllData();
+    const result = await serviceData.getAllData(req.query);
     res.status(200).json({
       success: true,
-      message: 'student create successfully',
+      message: 'all data is here',
       finalData: result,
     });
   } catch (error) {

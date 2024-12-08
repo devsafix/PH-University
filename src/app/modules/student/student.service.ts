@@ -8,13 +8,49 @@ import { userModel } from '../user/user.model';
 import { Student } from './student.interface';
 
 
-const getAllData = async () => {
-  const result = await StudentModel.find().populate('admissionSemester').populate({
+const getAllData = async (query:Record<string,unknown>) => {
+
+  let searchTerm= '';
+  if (query?.searchTerm){
+    searchTerm = query?.searchTerm as string
+  }
+
+  const queryObj={...query}
+
+// searching by searchTerm data --------->
+
+  const searchingQuery = StudentModel.find({
+    $or: ["email", "name.firstName", "presentAdd"].map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' }
+    }))
+  })
+
+
+  // filtering 
+
+  const excludeFields = ["searchTerm", "sort","limit"]
+  excludeFields.forEach(el=>delete queryObj[el])
+
+  const filteringQuery = searchingQuery.find(queryObj).populate('admissionSemester').populate({
     path: 'academicDepartment',
-    populate:{
+    populate: {
       path: "academicfaculty"
     }
   });
+
+  let sort="-createdAt"
+  if(query?.sort){
+    sort = query.sort as string
+  }
+
+  const sorting = filteringQuery.sort(sort)
+
+  let limit=1
+  if(query?.limit){
+    limit = query?.limit as number
+  }
+
+  const result = await sorting.limit(limit)
   return result;
 };
 
