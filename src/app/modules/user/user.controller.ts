@@ -42,7 +42,33 @@ const createUser = catchAsync(async (req, res) => {
         });
    
 })
+const createFaculty = catchAsync(async (req, res) => {
+    const { password, faculty: facultyData } = req.body;
+
+    const result = await serviceData.createFacultyIntoDB(password, facultyData);
+
+  res.status(400).json({
+      success: true,
+      message: 'Faculty is created succesfully',
+      data: result,
+  })
+});
+
+const createAdmin = catchAsync(async (req, res) => {
+    const { password, admin: adminData } = req.body;
+
+    const result = await serviceData.createAdminIntoDB(password, adminData);
+
+   res.status(200).json({
+       success: true,
+       message: 'Admin is created succesfully',
+       data: result,
+   })
+});
+
 
 export const userController={
-    createUser
+    createUser,
+    createFaculty,
+    createAdmin
 }
