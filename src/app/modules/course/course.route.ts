@@ -1,6 +1,6 @@
 import express from 'express'
 import validateRequest from '../../middleware/validateRequest'
-import courseValidationSchema, { updateCourseValidationSchema } from './couser.validation'
+import courseValidationSchema, { courseFacultyValidation, updateCourseValidationSchema } from './couser.validation'
 import { courseController } from './course.controler'
 
 
@@ -12,6 +12,10 @@ router.get("/academic-course/:id", courseController.getSingleCourse)
 router.delete("/academic-course/:id", courseController.getDeleteCourse)
 
 router.patch("/academic-course/:id",validateRequest(updateCourseValidationSchema),courseController.updateCourse)
+
+router.put("/academic-course/:courseId/assignFaculties",validateRequest(courseFacultyValidation), courseController.assignFaculties)
+
+router.delete("/academic-course/:courseId/removeFaculties", validateRequest(courseFacultyValidation), courseController.removeFaculties)
 
 
 
