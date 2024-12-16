@@ -6,8 +6,9 @@ import bcrypt from "bcrypt";
 const userSchema = new Schema<TUser>(
     {
         id: { type: String, required: true ,unique:true },
-        password: { type: String },
+        password: { type: String},
         needsPasswordChange: { type: Boolean, default: true },
+        passwordChangeAt:{type:Date},
         role: { type: String, enum: ["admin", "student", "faculty"] },
         status: { type: String, enum: ["in-progress", "blocked"], default: "in-progress" },
         isDeleted: { type: Boolean, default: false },
