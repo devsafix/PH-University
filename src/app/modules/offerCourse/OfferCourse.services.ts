@@ -1,3 +1,4 @@
+import QueryBuilder from "../../bulder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { academicDepartmentModel } from "../AcademicDepartment/academicDepartment.model";
 import { academicFacultyModel } from "../AcademicFaculty/academicFaculty.model";
@@ -138,9 +139,62 @@ const updateOfferCourse = async (id: string, payload: Pick<TOfferedCourse, 'facu
 
 }
 
+const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
+    const offeredCourseQuery = new QueryBuilder(OfferedCourseModel.find(), query)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+    const result = await offeredCourseQuery.modelQuery;
+    return result;
+};
+const getSingleOfferedCourseFromDB = async (id: string) => {
+    const offeredCourse = await OfferedCourseModel.findById(id);
+
+    if (!offeredCourse) {
+        throw new AppError(404, 'Offered Course not found');
+    }
+
+    return offeredCourse;
+};
+
+
+const deleteOfferedCourseFromDB = async (id: string) => {
+    /**
+     * Step 1: check if the offered course exists
+     * Step 2: check if the semester registration status is upcoming
+     * Step 3: delete the offered course
+     */
+    const isOfferedCourseExists = await OfferedCourseModel.findById(id);
+
+    if (!isOfferedCourseExists) {
+        throw new AppError(404, 'Offered Course not found');
+    }
+
+    const semesterRegistation = isOfferedCourseExists.semesterRegistration;
+
+    const semesterRegistrationStatus =
+        await semesterRegistrationModel.findById(semesterRegistation).select('status');
+
+    if (semesterRegistrationStatus?.status !== 'UPCOMING') {
+        throw new AppError(
+            500,
+            `Offered course can not update ! because the semester ${semesterRegistrationStatus}`,
+        );
+    }
+
+    const result = await OfferedCourseModel.findByIdAndDelete(id);
+
+    return result;
+};
+
 
 
 export const offerCourseService = {
     createOfferCourseIntoDB,
-    updateOfferCourse
+    updateOfferCourse,
+    getAllOfferedCoursesFromDB,
+    getSingleOfferedCourseFromDB,
+    deleteOfferedCourseFromDB
 }
