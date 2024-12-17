@@ -39,13 +39,16 @@ const loginUser = async (payload: TLoginUer) => {
         userId: isUserExists?.id,
         role: isUserExists?.role
     }
-
+    // <--------create a access Token --------------->
     const token = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: "10d" });
+    // <--------create a Refresh Token --------------->
+    const reFreshToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: "365d" });
 
 
     return {
         accessToken: token,
-        needsPasswordChange: isUserExists?.needsPasswordChange
+        needsPasswordChange: isUserExists?.needsPasswordChange,
+        reFreshToken
     }
 
 
@@ -98,8 +101,62 @@ const changePassword = async (userData: JwtPayload, payload: { oldPassword: stri
 }
 
 
+const reFreshToken=async(token:string)=>{
+    // <----- check if the token is valid ;---->
+
+    const decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+    ) as JwtPayload;
+
+    const {  userId, iat } = decoded;
+
+
+    // checking is user exist 
+    const isUserExists = await userModel.findOne({ id: userId })
+    if (!isUserExists) {
+        throw new AppError(404, "this user not exists");
+
+    }
+    // check if the user is already deleted
+    const isUserDelete = isUserExists?.isDeleted
+    if (isUserDelete) {
+        throw new AppError(404, "this user is deleted");
+
+    }
+    const isUserBlocked = isUserExists?.status
+    if (isUserBlocked === 'blocked') {
+        throw new AppError(404, "this user is blocked");
+
+    }
+    const isUserChangePassword = isUserExists?.passwordChangeAt
+    if (isUserChangePassword && iat && isUserChangePassword.getTime() > iat * 1000) {
+        // Invalidate the token logic here
+        throw new AppError(
+            401,
+            'You are not authorized  hi!',
+        );
+    }
+
+    const jwtPayload = {
+        userId: isUserExists?.id,
+        role: isUserExists?.role
+    }
+    // <--------create a access Token --------------->
+    const newToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: "10d" });
+
+
+    return {
+        accessToken: newToken
+    }
+
+
+}
+
+
 export const authenticationServices = {
     loginUser,
-    changePassword
+    changePassword,
+    reFreshToken
 }
 
