@@ -11,6 +11,8 @@ import { Admin } from "../Admin/admin.model";
 import { TFaculty } from "../Faculty/faculty.interface";
 import { academicDepartmentModel } from "../AcademicDepartment/academicDepartment.model";
 import { Faculty } from "../Faculty/faculty.model";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from 'jsonwebtoken'
 
 const createUserInDB = async (password: string, data: Student) => {
 
@@ -28,6 +30,7 @@ const createUserInDB = async (password: string, data: Student) => {
 
     // default role
     user.role = "student"
+    user.email = data.email
 
 
     // find semester find by id
@@ -70,13 +73,13 @@ const createUserInDB = async (password: string, data: Student) => {
         return newStudent;
 
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error:any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         console.log(error)
         await session.abortTransaction()
         await session.endSession()
         throw new Error(error);
-        
+
     }
 
 
@@ -95,6 +98,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
     //set student role
     userData.role = 'faculty';
+    userData.email = payload.email
 
     // find academic department info
     const academicDepartment = await academicDepartmentModel.findById(
@@ -135,7 +139,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
         await session.endSession();
 
         return newFaculty;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
         await session.abortTransaction();
         await session.endSession();
@@ -152,6 +156,7 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
 
     //set student role
     userData.role = 'admin';
+    userData.email = payload.email
 
     const session = await mongoose.startSession();
 
@@ -182,7 +187,7 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
         await session.endSession();
 
         return newAdmin;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
         await session.abortTransaction();
         await session.endSession();
@@ -190,8 +195,43 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
     }
 };
 
+const getMeFromDB = async (token: string) => {
+    const decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+    ) as JwtPayload;
+
+    const { role, userId } = decoded;
+
+    let result = null
+
+    if (role === "student") {
+        result = await StudentModel.findOne({ id: userId }).populate('user');
+    }
+    if (role === "admin") {
+        result = await Admin.findOne({ id: userId }).populate('user');
+    }
+    if (role === "faculty") {
+        result = await Faculty.findOne({ id: userId }).populate('user');
+    }
+
+
+    return result
+}
+
+
+
+const changeStatus = async (id: string, payload: { status: string }) => {
+    const result = await userModel.findByIdAndUpdate(id, payload, { new: true })
+    return result ;
+}
+
+
+
 export const serviceData = {
     createUserInDB,
     createAdminIntoDB,
-    createFacultyIntoDB
+    createFacultyIntoDB,
+    getMeFromDB,
+    changeStatus
 }

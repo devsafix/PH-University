@@ -8,5 +8,7 @@ export default {
   salt_round: process.env.SALT_ROUND,
   default_pass: process.env.DEFAULT_PASS,
   node_env: process.env.NODE_ENV,
-  jwt_access_secret: process.env.JWT_ACCESS_SECRET
+  jwt_access_secret: process.env.JWT_ACCESS_SECRET,
+  reset_pass_ui_Link:process.env.RESET_PASSWORD_UI_LINK
+  
 };

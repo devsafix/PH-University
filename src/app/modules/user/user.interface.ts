@@ -1,6 +1,7 @@
 export type TUser={
     user: import("mongoose").Types.ObjectId;
     id:string;
+    email:string,
     password?:string | undefined;
     needsPasswordChange:boolean;
     passwordChangeAt?:Date;

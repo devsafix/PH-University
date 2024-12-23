@@ -26,6 +26,20 @@ router.post(
     validateRequest(createAdminValidationSchema),
     userController.createAdmin,
 );
+router.get(
+    '/me',
+    auth("admin","faculty","student"),
+    userController.getMe,
+);
+
+
+router.post(
+    '/change-status/:id',
+    auth("admin"),
+    userController.changeStatus,
+);
+
+
 
 
 
