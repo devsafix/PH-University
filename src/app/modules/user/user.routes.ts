@@ -7,40 +7,30 @@ import { createAdminValidationSchema } from '../Admin/admin.validation';
 import auth from '../../middleware/auth';
 import { User_Role } from './user.const';
 
-
-
 const router = express.Router();
 
-router.post('/create-user',auth(User_Role.admin),validateRequest(studentSchemaWIthZod), userController.createUser);
-
 router.post(
-    '/create-faculty',
-    auth(User_Role.admin),
-    validateRequest(createFacultyValidationSchema),
-    userController.createFaculty,
+  '/create-user',
+  auth(User_Role.admin),
+  validateRequest(studentSchemaWIthZod),
+  userController.createUser,
 );
 
 router.post(
-    '/create-admin',
-    // auth(User_Role.admin),
-    validateRequest(createAdminValidationSchema),
-    userController.createAdmin,
+  '/create-faculty',
+  auth(User_Role.admin),
+  validateRequest(createFacultyValidationSchema),
+  userController.createFaculty,
 );
-router.get(
-    '/me',
-    auth("admin","faculty","student"),
-    userController.getMe,
-);
-
 
 router.post(
-    '/change-status/:id',
-    auth("admin"),
-    userController.changeStatus,
+  '/create-admin',
+  // auth(User_Role.admin),
+  validateRequest(createAdminValidationSchema),
+  userController.createAdmin,
 );
+router.get('/me', auth('admin', 'faculty', 'student'), userController.getMe);
 
-
-
-
+router.post('/change-status/:id', auth('admin'), userController.changeStatus);
 
 export const userRoutes = router;
